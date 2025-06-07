@@ -37,6 +37,9 @@ class Lexer:
             ('COMMENT', r'BTW.*'),
             ('HAI', r'HAI 1\.2'),
             ('KTHXBYE', r'KTHXBYE'),
+            ('VISIBLE', r'VISIBLE'),
+            ('YARN', r'"[^"]*"'),
+            ('IDENTIFIER', r'[a-zA-Z][a-zA-Z0-9_]*'),
         ]
 
         while self.pos < len(self.code):
