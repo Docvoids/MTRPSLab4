@@ -40,7 +40,8 @@ class Parser:
         if token_type == 'VISIBLE':
             return self._parse_visible()
         if token_type == 'IDENTIFIER':
-            return self._parse_assignment()  # Added this
+            return self._parse_assignment()
+
         raise ParserError(f"Unexpected statement start with token {self._current()} at line {self._current().line}")
 
     def _parse_var_decl(self):
@@ -58,7 +59,7 @@ class Parser:
         self._eat('R')
         expression = self._parse_expression()
         return ast.AssignmentNode(identifier=identifier, expression=expression)
-    
+
     def _parse_visible(self):
         self._eat('VISIBLE')
         expressions = [self._parse_expression()]
@@ -68,12 +69,20 @@ class Parser:
 
     def _parse_expression(self):
         token = self._current()
-        # Binary ops will be added later
-        if token.type in ('NUMBR', 'YARN', 'TROOF'):
+        if token.type in ('SUM_OF', 'DIFF_OF', 'PRODUKT_OF', 'QUOSHUNT_OF', 'BOTH_SAEM', 'DIFFRINT'):
+            return self._parse_binary_op()
+        elif token.type in ('NUMBR', 'YARN', 'TROOF'):
             return self._parse_literal()
         elif token.type == 'IDENTIFIER':
             return ast.IdentifierNode(name=self._advance().value)
         raise ParserError(f"Unexpected token in expression: {token} at line {token.line}")
+
+    def _parse_binary_op(self):
+        op_token = self._advance()
+        left = self._parse_expression()
+        self._eat('AN')
+        right = self._parse_expression()
+        return ast.BinaryOpNode(left=left, op=op_token.type, right=right)
 
     def _parse_literal(self):
         token = self._advance()
