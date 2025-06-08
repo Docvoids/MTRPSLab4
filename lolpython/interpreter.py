@@ -28,7 +28,13 @@ class Interpreter:
     def _visit_VisibleNode(self, node: ast.VisibleNode):
         outputs = [str(self.interpret(expr)) for expr in node.expressions]
         print(" ".join(outputs))
-
+        
+    def _visit_AssignmentNode(self, node: ast.AssignmentNode):
+        var_name = node.identifier.name
+        if var_name not in self.symbol_table:
+            raise InterpreterError(f"Undeclared variable '{var_name}'")
+        self.symbol_table[var_name] = self.interpret(node.expression)
+    
     def _visit_LiteralNode(self, node: ast.LiteralNode):
         return node.value
 
