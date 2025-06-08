@@ -39,7 +39,8 @@ class Parser:
             return self._parse_var_decl()
         if token_type == 'VISIBLE':
             return self._parse_visible()
-        # Assignment will be added later
+        if token_type == 'IDENTIFIER':
+            return self._parse_assignment()  # Added this
         raise ParserError(f"Unexpected statement start with token {self._current()} at line {self._current().line}")
 
     def _parse_var_decl(self):
@@ -51,6 +52,13 @@ class Parser:
             initializer = self._parse_expression()
         return ast.VarDeclNode(name=name, initializer=initializer)
 
+    def _parse_assignment(self):
+        identifier_token = self._eat('IDENTIFIER')
+        identifier = ast.IdentifierNode(name=identifier_token.value)
+        self._eat('R')
+        expression = self._parse_expression()
+        return ast.AssignmentNode(identifier=identifier, expression=expression)
+    
     def _parse_visible(self):
         self._eat('VISIBLE')
         expressions = [self._parse_expression()]
