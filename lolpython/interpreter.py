@@ -28,7 +28,13 @@ class Interpreter:
     def _visit_VisibleNode(self, node: ast.VisibleNode):
         outputs = [str(self.interpret(expr)) for expr in node.expressions]
         print(" ".join(outputs))
-
+        
+    def _visit_AssignmentNode(self, node: ast.AssignmentNode):
+        var_name = node.identifier.name
+        if var_name not in self.symbol_table:
+            raise InterpreterError(f"Undeclared variable '{var_name}'")
+        self.symbol_table[var_name] = self.interpret(node.expression)
+    
     def _visit_LiteralNode(self, node: ast.LiteralNode):
         return node.value
 
@@ -37,3 +43,30 @@ class Interpreter:
         if var_name not in self.symbol_table:
             raise InterpreterError(f"Undeclared variable '{var_name}'")
         return self.symbol_table.get(var_name)
+
+    def _visit_BinaryOpNode(self, node: ast.BinaryOpNode):
+        left_val = self.interpret(node.left)
+        right_val = self.interpret(node.right)
+
+        if node.op in ('SUM_OF', 'DIFF_OF', 'PRODUKT_OF', 'QUOSHUNT_OF'):
+            if not isinstance(left_val, (int, float)) or not isinstance(right_val, (int, float)):
+                raise InterpreterError(
+                    f"Arithmetic operations require NUMBRs, but got {type(left_val)} and {type(right_val)}")
+
+        if node.op == 'SUM_OF':
+            return left_val + right_val
+        if node.op == 'DIFF_OF':
+            return left_val - right_val
+        if node.op == 'PRODUKT_OF':
+            return left_val * right_val
+        if node.op == 'QUOSHUNT_OF':
+            if right_val == 0:
+                raise InterpreterError("Division by zero")
+            return left_val / right_val
+        if node.op == 'BOTH_SAEM':
+            return left_val == right_val
+        if node.op == 'DIFFRINT':
+            return left_val != right_val
+
+        raise InterpreterError(f"Unknown binary operator: {node.op}")
+        
