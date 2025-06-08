@@ -19,6 +19,13 @@ class LiteralNode(ExpressionNode):
 class IdentifierNode(ExpressionNode):
     name: str
 
+# Операції
+@dataclass
+class BinaryOpNode(ExpressionNode):
+    left: ExpressionNode
+    op: str
+    right: ExpressionNode
+
 # Інструкції (Statements)
 @dataclass
 class StatementNode(ASTNode):
@@ -32,6 +39,11 @@ class ProgramNode(ASTNode):
 class VarDeclNode(StatementNode):
     name: str
     initializer: Optional[ExpressionNode]
+
+@dataclass
+class AssignmentNode(StatementNode):
+    identifier: IdentifierNode
+    expression: ExpressionNode
 
 @dataclass
 class VisibleNode(StatementNode):
