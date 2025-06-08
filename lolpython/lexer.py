@@ -39,6 +39,8 @@ class Lexer:
             ('KTHXBYE', r'KTHXBYE'),
             ('VISIBLE', r'VISIBLE'),
             ('YARN', r'"[^"]*"'),
+            ('NUMBR', r'-?\d+\.\d+|-?\d+'),
+            ('TROOF', r'WIN|FAIL'),
             ('IDENTIFIER', r'[a-zA-Z][a-zA-Z0-9_]*'),
         ]
 
